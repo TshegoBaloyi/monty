@@ -1,62 +1,94 @@
 #include "monty.h"
 
-char *get_int(int num);
-unsigned int get_abs(int);
-int get_numbase_len(unsigned int num, unsigned int base);
-void fill_numbase_buff(unsigned int num, unsigned int base,
-                       char *buff, int buff_size);
 
-char *get_int(int num) {
-    unsigned int temp;
-    int length = 0;
-    long num_l = 0;
-    char *ret;
+/**
+ * stringPrnt - Prints a string.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @ln: Interger representing the line number of of the opcode.
+ */
+void stringPrnt(stack_t **stack, __attribute__((unused))unsigned int ln)
+{
+	int ascii;
+	stack_t *tmp;
 
-    temp = get_abs(num);
-    length = get_numbase_len(temp, 10);
+	if (stack == NULL || *stack == NULL)
+	{
+		printf("\n");
+		return;
+	}
 
-    if (num < 0 || num_l < 0)
-        length++; 
-    ret = (char *)malloc(length + 1); 
-    if (!ret)
-        return NULL;
-
-    fill_numbase_buff(temp, 10, ret, length);
-    if (num < 0 || num_l < 0)
-        ret[0] = '-';
-
-    return ret;
+	tmp = *stack;
+	while (tmp != NULL)
+	{
+		ascii = tmp->n;
+		if (ascii <= 0 || ascii > 127)
+			break;
+		printf("%c", ascii);
+		tmp = tmp->next;
+	}
+	printf("\n");
 }
 
-unsigned int get_abs(int i) {
-    if (i < 0)
-        return (unsigned int)(-i);
-    return (unsigned int)i;
+/**
+ * rotl - Rotates the first node of the stack to the bottom.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @ln: Interger representing the line number of of the opcode.
+ */
+void rotl(stack_t **stack, __attribute__((unused))unsigned int ln)
+{
+	stack_t *tmp;
+
+	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+		return;
+
+	tmp = *stack;
+	while (tmp->next != NULL)
+		tmp = tmp->next;
+
+	tmp->next = *stack;
+	(*stack)->prev = tmp;
+	*stack = (*stack)->next;
+	(*stack)->prev->next = NULL;
+	(*stack)->prev = NULL;
+}
+/**
+ * printAscii - Prints the Ascii value.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @line_number: Interger representing the line number of of the opcode.
+ */
+void printAscii(stack_t **stack, unsigned int line_number)
+{
+	int ascii;
+
+	if (stack == NULL || *stack == NULL)
+		string_error(11, line_number);
+
+	ascii = (*stack)->n;
+	if (ascii < 0 || ascii > 127)
+		string_error(10, line_number);
+	printf("%c\n", ascii);
 }
 
-int get_numbase_len(unsigned int num, unsigned int base) {
-    int len = 1;
+/**
+ * rotr - Rotates the last node of the stack to the top.
+ * @stack: Pointer to a pointer pointing to top node of the stack.
+ * @ln: Interger representing the line number of of the opcode.
+ */
+void rotr(stack_t **stack, __attribute__((unused))unsigned int ln)
+{
+	stack_t *tmp;
 
-    while (num > base - 1) {
-        len++;
-        num /= base;
-    }
-    return len;
+	if (stack == NULL || *stack == NULL || (*stack)->next == NULL)
+		return;
+
+	tmp = *stack;
+
+	while (tmp->next != NULL)
+		tmp = tmp->next;
+
+	tmp->next = *stack;
+	tmp->prev->next = NULL;
+	tmp->prev = NULL;
+	(*stack)->prev = tmp;
+	(*stack) = tmp;
 }
-
-void fill_numbase_buff(unsigned int num, unsigned int base,
-                       char *buff, int buff_size) {
-    int rem, i = buff_size - 1;
-
-    buff[buff_size] = '\0';
-    while (i >= 0) {
-        rem = num % base;
-        if (rem > 9) 
-            buff[i] = rem + 87; 
-        else
-            buff[i] = rem + '0';
-        num /= base;
-        i--;
-    }
-}
-

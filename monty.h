@@ -1,23 +1,13 @@
-#ifndef __MONTY_H__
-#define __MONTY_H__
+#ifndef MONTY_H
+#define MONTY_H
 
-
+#define _GNU_SOURCE
 #include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
- 
-#define STACK 0
-#define QUEUE 1
-#define DELIMS " \n\t\a\b"
-#define  _POSIX_C_SOURCE 200809L
-
-/* GLOBAL OPCODE TOKENS */
-extern char **op_toks;
-
+#include <stdlib.h>
+#include <ctype.h>
+#include <stdarg.h>
 
 /**
  * struct stack_s - doubly linked list representation of a stack (or queue)
@@ -26,15 +16,14 @@ extern char **op_toks;
  * @next: points to the next element of the stack (or queue)
  *
  * Description: doubly linked list node structure
- * for stack, queues, LIFO, FIFO Holberton project
+ * for stack, queues, LIFO, FIFO
  */
 typedef struct stack_s
 {
-    int n;
-    struct stack_s *prev;
-    struct stack_s *next;
+        int n;
+        struct stack_s *prev;
+        struct stack_s *next;
 } stack_t;
-
 
 /**
  * struct instruction_s - opcode and its function
@@ -42,63 +31,56 @@ typedef struct stack_s
  * @f: function to handle the opcode
  *
  * Description: opcode and its function
- * for stack, queues, LIFO, FIFO Holberton project
+ * for stack, queues, LIFO, FIFO
  */
 typedef struct instruction_s
 {
-    char *opcode;
-    void (*f)(stack_t **stack, unsigned int line_number);
+        char *opcode;
+        void (*f)(stack_t **stack, unsigned int line_number);
 } instruction_t;
 
-
-/* PRIMARY INTERPRETER FUNCTIONS */
-void free_stack(stack_t **stack);
-int init_stack(stack_t **stack);
-int check_mode(stack_t *stack);
-void free_tokens(void);
-unsigned int token_arr_len(void);
-int run_monty(FILE *script_fd);
-void set_op_tok_error(int error_code);
+extern stack_t *head;
+typedef void (*op_func)(stack_t **, unsigned int);
 
 
-/* OPCODE FUNCTIONS */
-void monty_push(stack_t **stack, unsigned int line_number);
-void monty_pall(stack_t **stack, unsigned int line_number);
-void monty_pint(stack_t **stack, unsigned int line_number);
-void monty_pop(stack_t **stack, unsigned int line_number);
-void monty_swap(stack_t **stack, unsigned int line_number);
-void monty_add(stack_t **stack, unsigned int line_number);
-void monty_nop(stack_t **stack, unsigned int line_number);
-void monty_sub(stack_t **stack, unsigned int line_number);
-void monty_div(stack_t **stack, unsigned int line_number);
-void monty_mul(stack_t **stack, unsigned int line_number);
-void monty_mod(stack_t **stack, unsigned int line_number);
-void monty_pchar(stack_t **stack, unsigned int line_number);
-void monty_pstr(stack_t **stack, unsigned int line_number);
-void monty_rotl(stack_t **stack, unsigned int line_number);
-void monty_rotr(stack_t **stack, unsigned int line_number);
-void monty_stack(stack_t **stack, unsigned int line_number);
-void monty_queue(stack_t **stack, unsigned int line_number);
+/*Error hanlding*/
+void error(int error_code, ...);
+void error2(int error_code, ...);  
+void string_error(int error_code, ...);
+void rotr(stack_t **, unsigned int);
 
 
-/* CUSTOM STANDARD LIBRARY FUNCTIONS */
-char **strtow(char *str, char *delims);
-char *get_int(int n);
+/*Stack operations*/
+stack_t *create_node(int n);
+void free_nodes(void);
+void stackPrint(stack_t **, unsigned int);
+void addStack(stack_t **, unsigned int);
+void queueAdd(stack_t **, unsigned int);
 
+void funcCal(op_func, char *, char *, int, int);
 
-/* ERROR MESSAGES & ERROR CODES */
-int handleUsageError(void);
-int handleUnknownOperationError(char *operation, unsigned int lineNumber);
-int handleFileOpenError(char *filename);
-int handleMallocError(void);
-int handleNoIntegerError(unsigned int lineNumber);
+void topStack(stack_t **, unsigned int);
+void popStack(stack_t **, unsigned int);
+void stackNop(stack_t **, unsigned int);
+void stackSwap(stack_t **, unsigned int);
 
-int handle_pop_error(unsigned int line_number);
-int handle_pint_error(unsigned int line_number);
-int handle_short_stack_error(unsigned int line_number, char *operation);
-int handle_div_error(unsigned int line_number);
-int handle_pchar_error(unsigned int line_number, char *error_message);
+/*Math operations with nodes*/
+void nodesAdd(stack_t **, unsigned int);
+void nodesSub(stack_t **, unsigned int);
+void nodesDiv(stack_t **, unsigned int);
+void nodesMult(stack_t **, unsigned int);
+void nodesMod(stack_t **, unsigned int);
 
-#endif /* __MONTY_H__ */
+/*String operations*/
+void printAscii(stack_t **, unsigned int);
+void stringPrnt(stack_t **, unsigned int);
+void rotl(stack_t **, unsigned int);
 
+/*file operations*/
+void open_file(char *file_name);
+int separate(char *buffer, int line_number, int format);
+void fileReader(FILE *);
+int len_chars(FILE *);
+void getFunc(char *, char *, int, int);
 
+#endif
