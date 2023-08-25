@@ -10,7 +10,6 @@
 
 int main(int argc, char *argv[])
 {
-	stack_t *head = NULL;
 
 	if (argc != 2)
 	{
@@ -29,7 +28,6 @@ int main(int argc, char *argv[])
  */
 stack_t *create_node(int n)
 {
-	stack_t *head = NULL;
 	stack_t *node;
 
 	node = malloc(sizeof(stack_t));
